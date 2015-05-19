@@ -1,0 +1,229 @@
+var startTime;
+var checkTime;
+
+//Initialize function
+var init = function () {
+	// TODO:: Do your initialization job
+	console.log("init() called");
+	
+	powerOn();
+	// add eventListener for tizenhwkey
+	document.addEventListener('tizenhwkey', function(e) {
+		if(e.keyName == "back") {
+			try {
+				tizen.application.getCurrentApplication().exit();
+			} catch (error) {
+				console.error("getCurrentApplication(): " + error.message);
+			}
+		}
+	});
+};
+// window.onload can work without <body onload="">
+window.onload = init;
+
+( function () {
+	window.addEventListener( 'tizenhwkey', function( ev ) {
+		if( ev.keyName == "back" ) {
+			var page = document.getElementsByClassName( 'ui-page-active' )[0],
+				pageid = page ? page.id : "";
+			if( pageid === "main" ) {
+				try {
+					tizen.application.getCurrentApplication().exit();
+				} catch (ignore) {
+				}
+			} else {
+				window.history.back();
+			}
+		}
+	} );
+} () );
+
+
+// Bluetooth code
+var adapter = tizen.bluetooth.getDefaultAdapter();
+var clientSocket = null;
+var bluetoothSwitchAppControl = new tizen.ApplicationControl("http://tizen.org/appcontrol/operation/edit", null, "application/x-bluetooth-on-off");
+var g_devices;
+var u, flag=0;
+
+function onBondingSuccess(device) {
+    console.log("Device Name:" + device.name);
+    console.log("Device Address:" + device.address);
+    console.log("Device Service UUIDs:" + device.uuids.join("\n"));
+ }
+
+
+// Calls a method that is invoked when user wants to send a message to a remote device.
+function sendMessage(msg) {
+   // Validates socket state, if everything is ok.
+   if (clientSocket != null && clientSocket.state == "OPEN") {
+       // Sends the message.
+       clientSocket.writeData(msg);
+   }
+}
+
+// Calls a method that is invoked when a socket is open.
+function onSocketConnected(socket) {
+	clientSocket = socket;
+    console.log("Opening a socket successfully!!!");
+    //alert("Opening a socket successfully!!!\n");
+    socket.onmessage = function () {
+        var data = socket.readData();
+        var recvmsg = "";
+        for (var i = 0; i < data.length; i++)
+        {
+           recvmsg += String.fromCharCode(data[i]);
+        }
+        //alert("1->"+recvmsg);
+        alert("Opening a socket successfully!!!\n"+recvmsg);
+        document.getElementById("menu").innerHTML += recvmsg+"<br>";
+        u++;
+        console.log("server msg >> " + recvmsg);
+    };
+
+    socket.onclose = function() {
+        console.log("socket disconnected.");
+    };
+ }
+
+function onErrorCallback(e)
+{
+   alert("Cannot create a bonding, reason: " + e.message);
+}
+
+
+function bluetoothClick() {
+	/* Discover devices */
+	//adapter.discoverDevices(discoverDevicesSuccessCallback, null);
+	//adapter.getKnownDevices(onGotDevices);
+	startDiscovery();
+	
+	//adapter.createBonding("40:b0:fa:5b:bb:42", onBondingSuccessCallback, onErrorCallback);
+	//adapter.createBonding("A0:B4:A5:6E:B6:3D", getDevice, onErrorCallback);
+	//adapter.createBonding("A0:B4:A5:6E:B6:3D", onBondingSuccess, onError);
+
+	alert(g_devices.length);
+	document.getElementById("menu").innerHTML = "";
+	u=0;
+	
+	/*
+	while(1){
+		alert("1-> u : "+u+"address : "+g_devices[u].address);
+		adapter.createBonding(g_devices[u].address, getDevice, onErrorCallback);
+	}*/
+	getDevice();
+
+	
+}
+
+function onDeviceReady(device) {
+    // Validates device and service uuid
+	//fa87c0d0-afac-11de-8a39-0800200c9a66
+	//alert("shhot");
+	
+	
+	device.connectToServiceByUUID("fa87c0d0-afac-11de-8a39-0800200c9a66", onSocketConnected, function(e) {
+        console.log ("Error connecting to service. Reason: " + e.message);
+     });
+
+ }
+
+function getDevice() {
+    // Gets the BluetoothDevice object.
+	//alert("2-> u : "+u+"address : "+g_devices[u].address);
+    //adapter.getDevice(g_devices[u].address, onDeviceReady, function(e) { console.log("Error: " + e.message); });
+
+	for(u=0; u < g_devices.length; u++){
+		document.getElementById("menu").innerHTML += "u : "+u+", address : "+g_devices[u].address+"<br>";
+		adapter.getDevice(g_devices[u].address, onDeviceReady, function(e) { console.log("Error: " + e.message); });
+	}
+ }
+
+// Bluetooth On
+function powerOn() 
+{
+     // If adapter is not powered on 
+     if(!adapter.powered) {
+          // Initiates power on
+          adapter.setPowered(true, function() {
+             console.log("Bluetooth powered on success.");
+             showMe();
+          },
+          function(e) {
+              console.log("Failed to power on Bluetooth: " + e.message);
+          });
+     }
+}
+
+// Bluetooth visible
+function showMe()
+{
+     if (adapter.visible == false) {
+         //Shows device
+         adapter.setVisible(true, 
+                            function() { console.log ("Device is visible to other devices for 3 minutes."); },
+                            function(e) { console.log ("Error: ' + e.message + '(' + e.name + ')"); });
+     }
+     else {
+          console.log("Device is already in discoverable mode.");
+     }
+}
+
+//connecting bluetooth devices name
+var discoverDevicesSuccessCallback =
+{
+   ondevicefound: function(device)
+   {
+      alert("Found device - name: " + device.name);
+   }
+}
+
+// connecting bluetooth devices number
+function onGotDevices(devices)
+{
+   alert("The number of known devices: " + devices.length);
+}
+
+function startDiscovery() {
+
+	  var discoverDevicesSuccessCallback = {
+	      onstarted: function() { 
+	          console.log ("Device discovery started...") ;
+	      },
+	      ondevicefound: function(device) {
+	          console.log("Found device - name: " + device.name + ", Address: "+ device.address);
+	          // Shows the device to user to check if this is the device user is looking for.
+	          // For example, add this to list view.
+
+	          cancelDiscovery();
+	      },
+	      ondevicedisappeared: function(address) { 
+	          console.log("Device disappeared: " + address);
+	          // Removes from list, as it is no longer valid.
+	      },
+	      onfinished: function(devices) { 
+	          console.log("Found Devices");
+	          //document.getElementById("menu").innerHTML = "";
+	          g_devices = devices;
+	          /*
+	          for (var i = 0; i < devices.length; i++) {
+	              //alert("Name: " + devices[i].name + ", Address: " + devices[i].address);
+	              document.getElementById("menu").innerHTML += "Name: " + devices[i].name + ", Address: " + devices[i].address + "<br>";
+	          }*/
+	          console.log("Total: " + devices.length);
+	      }
+	  };
+	 
+	  // Starts searching for nearby devices, for about 12 sec.
+	  adapter.discoverDevices(discoverDevicesSuccessCallback, function(e){
+	      console.log ("Failed to search devices: " + e.message + "(" + e.name + ")");
+	  });
+	 }
+
+function onBondingSuccess(device) {
+    alert("Device Name:" + device.name);
+    alert("Device Address:" + device.address);
+    alert("Device Service UUIDs:" + device.uuids.join("\n"));
+ }
+
+

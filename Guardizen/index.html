@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta name="viewport" content="width=device-width,user-scalable=no"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script src="./lib/jquery.js"></script>
+	<script type="text/javascript" src="./lib/tau/mobile/js/tau.js" data-build-remove="false"></script>
+	
+	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script type='text/javascript' src="http://cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.1/jquery.xdomainrequest.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script type='text/javascript' src="http://cdnjs.cloudflare.com/ajax/libs/jquery-ajaxtransport-xdomainrequest/1.0.1/jquery.xdomainrequest.min.js"></script>
+	
+	<link rel="stylesheet"  href="./lib/tau/mobile/theme/default/tau.css">
+
+	<script src="./js/main.js"></script>
+
+	<title>Tizen Web IDE</title>
+	<link rel="stylesheet" type="text/css" href="./css/style.css"/>
+</head>
+
+<body>
+    <div id="main" data-role="page">
+        <div data-role="header" data-position="fixed" data-id="foo">
+            <h1>Guardizen</h1>
+            <div data-role="tabbar" data-auto-change="false">
+                <ul>
+                	<li><a data-role="button" href="index.html" class="ui-btn-active">Main</a></li>
+                	<li><a data-role="button" href="section1.html">Phone</a></li>
+                	<li><a data-role="button" href="section2.html">Option</a></li>
+                </ul>
+            </div>
+        </div><!-- /header -->
+
+        <div data-role="content" id="content2" data-scroll="y" data-handler="false">
+            <div id = "menu">
+            
+            </div>
+            <!-- <ul data-role="listview" id="list2">
+                <li id="listitem6">Main</li>
+                </ul>
+             -->
+             </div>
+        <div data-role="button" id="button1" data-icon="alert" data-iconpos="right" onclick="bluetoothClick();">Report</div>
+        </div>
+    </div><!-- /page -->
+</body>
+</html>

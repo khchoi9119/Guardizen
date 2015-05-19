@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta name="viewport" content="width=device-width,user-scalable=no"/>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script src="./lib/jquery.js"></script>
+	<script type="text/javascript" src="./lib/tau/mobile/js/tau.js" data-build-remove="false"></script>
+	<link rel="stylesheet"  href="./lib/tau/mobile/theme/changeable/tau.css">
+
+	<script src="./js/main.js"></script>
+
+	<title>Tizen Web IDE</title>
+	<link rel="stylesheet" type="text/css" href="./css/style.css"/>
+</head>
+
+<body>
+    <div id="section2" data-role="page">
+        <div data-role="header" data-position="fixed" data-id="foo">
+            <h1>Guardizen</h1>
+            <div data-role="tabbar" data-auto-change="false">
+                <ul>
+                	<li><a data-role="button" href="index.html">Main</a></li>
+                	<li><a data-role="button" href="section1.html">Phone</a></li>
+                	<li><a data-role="button" href="section2.html" class="ui-btn-active">Option</a></li>
+                </ul>
+            </div>
+        </div><!-- /header -->
+
+        <div data-role="content" id="content2" data-scroll="y" data-handler="false">
+        	<div id = "menu">
+        		자동 신고 활성화
+				<input type="checkbox" id="checkboxitem1" checked="checked">
+				
+            	<!--  <div data-role="fieldcontain" id="checkboxes2">
+				<fieldset data-type="vertical" data-role="controlgroup"><input type="checkbox" id="checkboxitem2"></fieldset>
+				</div>-->
+            <h1>hi This is Guardizen
+            hi This is Guardizen
+            hi This is Guardizen
+            hi This is Guardizen
+            hi This is Guardizen
+            hi This is Guardizen
+            hi This is Guardizen
+            hi This is Guardizen
+            hi This is Guardizen
+            </h1>
+            </div>
+        <div data-role="button" id="button1" data-icon="alert" data-iconpos="right" onclick="bluetoothClick();">Report</div>
+        </div>
+    </div><!-- /page -->
+</body>
+</html>
